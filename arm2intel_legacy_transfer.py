@@ -78,7 +78,7 @@ def copy_all_except_non_intel_apps(remote_ip, username, copy_xcode, transfer_met
                 if copy_xcode:
                     destination = f"{username}@{remote_ip}:/Applications/"
                     if transfer_method == 'rsync':
-                        rsync_command = ["rsync", "-avh", app_path, destination]
+                        rsync_command = ["rsync", "-avvh", app_path, destination]
                         subprocess.run(rsync_command)
                     else:
                         scp_command = ["scp", "-vr", app_path, destination]
@@ -103,7 +103,7 @@ def copy_all_except_non_intel_apps(remote_ip, username, copy_xcode, transfer_met
             f.write(f"{app}\n")
     
     if transfer_method == 'rsync':
-        rsync_command = ["rsync", "-avh", "apps_to_manually_install.txt", f"{username}@{remote_ip}:/Applications/"]
+        rsync_command = ["rsync", "-avvh", "apps_to_manually_install.txt", f"{username}@{remote_ip}:/Applications/"]
         subprocess.run(rsync_command)
     else:
         scp_command = ["scp", "-v", "apps_to_manually_install.txt", f"{username}@{remote_ip}:/Applications/"]
@@ -113,7 +113,7 @@ def copy_all_except_non_intel_apps(remote_ip, username, copy_xcode, transfer_met
 def copy_additional_folder(remote_ip, username, folder, transfer_method):
     destination = f"{username}@{remote_ip}:{folder.replace('~', '')}"
     if transfer_method == 'rsync':
-        rsync_command = ["rsync", "-avh", os.path.expanduser(folder), destination]
+        rsync_command = ["rsync", "-avvh", os.path.expanduser(folder), destination]
         subprocess.run(rsync_command)
     else:
         scp_command = ["scp", "-vr", os.path.expanduser(folder), destination]

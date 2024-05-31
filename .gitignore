@@ -1,0 +1,8 @@
+# Ignore log files
+copy_mac_apps.log
+
+# Ignore reports and text files
+universal_binaries_report.txt
+non_intel_apps.txt
+universal_apps.txt
+apps_to_manually_install.txt
