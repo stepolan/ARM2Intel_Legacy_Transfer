@@ -94,6 +94,11 @@ def ask_user(prompt):
         return True
     return False
 
+def find_non_hidden_directories():
+    home_dir = os.path.expanduser("~")
+    directories = [d for d in os.listdir(home_dir) if os.path.isdir(os.path.join(home_dir, d)) and not d.startswith('.')]
+    return directories
+
 if __name__ == "__main__":
     results = check_applications_folder()
     save_results_to_file(results)
@@ -108,20 +113,30 @@ if __name__ == "__main__":
         copy_all_except_non_intel_apps(remote_ip, username)
         logging.info("All applications except non-intel applications have been copied")
 
-    if ask_user("Do you want to copy preferences?"):
-        copy_additional_folder(remote_ip, username, "~/Library/Preferences")
-        logging.info("Preferences have been copied")
+    if ask_user("Do you want to copy the entire Library directory?"):
+        copy_additional_folder(remote_ip, username, "~/Library")
+        logging.info("Library directory has been copied")
+    else:
+        if ask_user("Do you want to copy preferences?"):
+            copy_additional_folder(remote_ip, username, "~/Library/Preferences")
+            logging.info("Preferences have been copied")
 
-    if ask_user("Do you want to copy documents?"):
-        copy_additional_folder(remote_ip, username, "~/Documents")
-        logging.info("Documents have been copied")
+        if ask_user("Do you want to copy documents?"):
+            copy_additional_folder(remote_ip, username, "~/Documents")
+            logging.info("Documents have been copied")
 
-    if ask_user("Do you want to copy mail data?"):
-        copy_additional_folder(remote_ip, username, "~/Library/Mail")
-        logging.info("Mail data has been copied")
+        if ask_user("Do you want to copy mail data?"):
+            copy_additional_folder(remote_ip, username, "~/Library/Mail")
+            logging.info("Mail data has been copied")
 
-    if ask_user("Do you want to copy calendar data?"):
-        copy_additional_folder(remote_ip, username, "~/Library/Calendars")
-        logging.info("Calendar data has been copied")
+        if ask_user("Do you want to copy calendar data?"):
+            copy_additional_folder(remote_ip, username, "~/Library/Calendars")
+            logging.info("Calendar data has been copied")
+    
+    non_hidden_dirs = find_non_hidden_directories()
+    for directory in non_hidden_dirs:
+        if ask_user(f"Do you want to copy the {directory} directory?"):
+            copy_additional_folder(remote_ip, username, f"~/{directory}")
+            logging.info(f"{directory} directory has been copied")
     
     logging.info("The list of apps that were not copied has been saved to 'apps_to_manually_install.txt' and copied to the remote Applications folder")

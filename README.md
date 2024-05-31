@@ -1,6 +1,6 @@
 # ARM2Intel Legacy Transfer
 
-ARM2Intel Legacy Transfer is a tool that copies applications, preferences, documents, mail data, and calendar data from a newer Mac with an Apple-based processor (ARM architecture) to an older Intel Mac with an older OS version. It ensures compatibility by excluding applications that are not universal binaries (compatible with both Intel and Apple Silicon architectures).
+ARM2Intel Legacy Transfer is a tool that copies applications, preferences, documents, mail data, calendar data, and other non-hidden directories from a newer Mac with an Apple-based processor (ARM architecture) to an older Intel Mac with an older OS version. It ensures compatibility by excluding applications that are not universal binaries (compatible with both Intel and Apple Silicon architectures).
 
 ## Usage
 
@@ -13,10 +13,10 @@ ARM2Intel Legacy Transfer is a tool that copies applications, preferences, docum
 3. Open VSCode and navigate to the project directory.
 4. Run the script:
    ```bash
-   python3 copy_mac_apps.py
+   python3 carm2intel_legacy_transfer.py
    ```
 5. Enter the IP address and username of the older Mac when prompted.
-6. Respond to the prompts to decide whether to copy applications, preferences, documents, mail data, and calendar data.
+6. Respond to the prompts to decide whether to copy applications, preferences, documents, mail data, calendar data, and other non-hidden directories in the user home folder.
 
 ## Disclaimer
 
