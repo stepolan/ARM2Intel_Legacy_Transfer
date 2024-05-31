@@ -13,10 +13,14 @@ ARM2Intel Legacy Transfer is a tool that copies applications, preferences, docum
 3. Open VSCode and navigate to the project directory.
 4. Run the script:
    ```bash
-   python3 carm2intel_legacy_transfer.py
+   python3 arm2intel_legacy_transfer.py
    ```
 5. Enter the IP address and username of the older Mac when prompted.
-6. Respond to the prompts to decide whether to copy applications, preferences, documents, mail data, calendar data, and other non-hidden directories in the user home folder.
+6. Select the transfer method (rsync or scp). 
+   - rsync: Recommended for faster, incremental transfers, and can resume from interruptions.
+   - scp: Simple, secure copy, but restarts the transfer from the beginning if interrupted.
+7. Respond to the prompts to decide whether to copy applications, Xcode (if present), the entire Library directory, preferences, documents, mail data, calendar data, and other non-hidden directories in the user home folder.
+8. The script will then proceed to copy the selected files and directories.
 
 ## Disclaimer
 
