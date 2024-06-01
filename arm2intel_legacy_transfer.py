@@ -14,7 +14,7 @@ DARK_MAGENTA = '\033[35m'
 BOLD = '\033[1m'
 ENDC = '\033[0m'
 
-# Function to check if the application is a universal binary
+# Section: Check if Application is Universal Binary
 def check_universal_binary(app_path):
     executable_path = os.path.join(app_path, "Contents", "MacOS")
     if not os.path.exists(executable_path):
@@ -33,7 +33,7 @@ def check_universal_binary(app_path):
     else:
         return False, output
 
-# Function to check the applications folder
+# Section: Check Applications Folder
 def check_applications_folder():
     applications_folder = "/Applications"
     app_files = os.listdir(applications_folder)
@@ -47,7 +47,7 @@ def check_applications_folder():
     
     return results
 
-# Functions to save results to files
+# Section: Save Results to File
 def save_results_to_file(results):
     with open("universal_binaries_report.txt", "w") as f:
         for app, (is_universal, details) in results.items():
@@ -55,19 +55,21 @@ def save_results_to_file(results):
             f.write(f"{app}: {status}\n")
             f.write(f"Details: {details}\n\n")
 
+# Section: Save Non-Intel Apps to File
 def save_non_intel_apps_to_file(results):
     with open("non_intel_apps.txt", "w") as f:
         for app, (is_universal, details) in results.items():
             if not is_universal:
                 f.write(f"{app}\n")
 
+# Section: Save Universal Apps to File
 def save_universal_apps_to_file(results):
     with open("universal_apps.txt", "w") as f:
         for app, (is_universal, details) in results.items():
             if is_universal:
                 f.write(f"{app}\n")
 
-# Function to copy all applications except non-intel apps
+# Section: Copy All Applications Except Non-Intel Apps
 def copy_all_except_non_intel_apps(remote_ip, username, copy_xcode):
     with open("non_intel_apps.txt", "r") as f:
         non_intel_apps = [line.strip() for line in f]
@@ -114,19 +116,17 @@ def copy_all_except_non_intel_apps(remote_ip, username, copy_xcode):
     else:
         logging.error(f"Failed to copy apps_to_manually_install.txt to {username}@{remote_ip}:/Applications/. Check rsync_errors.log for details.")
 
-# Function to copy additional folders
+# Section: Copy Additional Folder
 def copy_additional_folder(remote_ip, username, folder):
     source = os.path.expanduser(folder)
     destination = f"{username}@{remote_ip}:~/{os.path.basename(folder)}"
     
     rsync_command = [
-        "sudo",
         "rsync",
         "-avvh",
         "--rsync-path='sudo rsync'",
         source,
-        destination,
-        "2> rsync_errors.log"
+        destination
     ]
     result = subprocess.run(" ".join(rsync_command), shell=True)
     
@@ -135,14 +135,14 @@ def copy_additional_folder(remote_ip, username, folder):
     else:
         logging.error(f"Failed to copy {folder} to {destination}")
 
-# Function to ask user for input with highlighted default value
+# Section: Ask User for Input with Highlighted Default Value
 def ask_user(prompt, highlight, default='y'):
     response = input(f"{prompt.replace(highlight, YELLOW + BOLD + highlight + ENDC)} ({GREEN}y{ENDC}/{RED}n{ENDC}, default {GREEN}{default}{ENDC}): ").strip().lower()
     if response == '':
         return default == 'y'
     return response == 'y'
 
-# Function to ask user for transfer method
+# Section: Ask User for Transfer Method
 def ask_transfer_method():
     os.system('cls' if os.name == 'nt' else 'clear')
     print(f"{YELLOW}{BOLD}Select transfer method:{ENDC}")
@@ -154,25 +154,38 @@ def ask_transfer_method():
         else:
             print(f"{RED}Invalid choice. Please enter 1.{ENDC}")
 
-# Function to find non-hidden directories in home folder
+# Section: Find Non-Hidden Directories in Home Folder
 def find_non_hidden_directories():
     home_dir = os.path.expanduser("~")
     directories = [d for d in os.listdir(home_dir) if os.path.isdir(os.path.join(home_dir, d)) and not d.startswith('.')]
     return directories
 
-# Function to check if Xcode is installed
+# Section: Check if Xcode is Installed
 def check_for_xcode():
     return os.path.exists("/Applications/Xcode.app")
 
-# Function to center text within a fixed width
+# Section: Center Text Within a Fixed Width
 def center_within_width(text, width):
     text_width = len(text)
     padding = (width - text_width) // 2
     return ' ' * padding + text
 
+# Section: Generate Summary of Applications Not Copied
+def generate_summary(not_copied_apps):
+    summary = "\nSummary of Applications Not Copied:\n"
+    summary += "=" * 50 + "\n"
+    for app in not_copied_apps:
+        summary += f"{app}: Not copied because it is not a universal binary or user opted out.\n"
+    summary += "\nPlease manually install these applications on your older Mac as needed.\n"
+    return summary
+
+# Section: Save Summary to File
+def save_summary_to_file(summary):
+    with open("not_copied_summary.txt", "w") as f:
+        f.write(summary)
+
 if __name__ == "__main__":
     # Section: Check Applications
-    logging.info("*** STARTING A NEW RUN OF THE SCRIPT ****")
     results = check_applications_folder()
     save_results_to_file(results)
     save_non_intel_apps_to_file(results)
@@ -180,6 +193,7 @@ if __name__ == "__main__":
     logging.info("Results saved to 'universal_binaries_report.txt', 'non_intel_apps.txt', and 'universal_apps.txt'")
 
     # Section: Get User Input for IP and Username
+    logging.info("*** STARTING A NEW RUN OF THE SCRIPT ****")
     os.system('cls' if os.name == 'nt' else 'clear')
     remote_ip = input(f"Please enter the {YELLOW}{BOLD}IP address{ENDC} of the older Mac: ")
     username = input(f"Please enter the {YELLOW}{BOLD}username{ENDC} of the older Mac: ")
@@ -242,10 +256,10 @@ if __name__ == "__main__":
     if copy_library:
         copy_additional_folder(remote_ip, username, "~/Library")
         logging.info("Library directory has been copied")
-
-    if copy_preferences:
-        copy_additional_folder(remote_ip, username, "~/Library/Preferences")
-        logging.info("Preferences have been copied")
+    else:
+        if copy_preferences:
+            copy_additional_folder(remote_ip, username, "~/Library/Preferences")
+            logging.info("Preferences have been copied")
 
     if copy_documents:
         copy_additional_folder(remote_ip, username, "~/Documents")
@@ -258,7 +272,7 @@ if __name__ == "__main__":
     if copy_calendars:
         copy_additional_folder(remote_ip, username, "~/Library/Calendars")
         logging.info("Calendar data has been copied")
-    
+
     if copy_desktop:
         copy_additional_folder(remote_ip, username, "~/Desktop")
         logging.info("Desktop directory has been copied")
@@ -299,4 +313,9 @@ if __name__ == "__main__":
             copy_additional_folder(remote_ip, username, f"~/{directory}")
             logging.info(f"{directory} directory has been copied")
 
-    logging.info("The list of apps that were not copied has been saved to 'apps_to_manually_install.txt' and copied to the remote Applications folder")
+    # Generate and display summary
+    summary = generate_summary(not_copied_apps)
+    print("These Application were not copied since they do not have the binaries required for Intel.  You will likely want to install this apps the standard way.")
+    print(summary)
+    save_summary_to_file(summary)
+    logging.info("Summary of applications not copied has been saved to 'not_copied_summary.txt'")

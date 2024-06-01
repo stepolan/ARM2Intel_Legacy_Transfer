@@ -14,13 +14,13 @@ This script was created because the Apple migration assistant does not let you m
    - Open your terminal.
    - Navigate to the directory where you want to clone the repository.
    - Run the following command to clone the repository:
-     ```
+     ```bash
      git clone https://github.com/yourusername/arm2intel_legacy_transfer.git
      ```
 
 2. **Navigate to the Project Directory**:
    - Change to the project directory:
-     ```
+     ```bash
      cd arm2intel_legacy_transfer
      ```
 
@@ -31,38 +31,26 @@ This script was created because the Apple migration assistant does not let you m
 
 4. **Create and Activate a Conda Environment**:
    - Create a new conda environment with Python 3.9:
-     ```
+     ```bash
      conda create --name arm2intel_legacy_transfer python=3.9
      ```
    - Activate the environment:
-     ```
+     ```bash
      conda activate arm2intel_legacy_transfer
      ```
-
-5. **Install Required Packages**:
-   - If you have a `requirements.txt` file, install the required packages:
-     ```
-     pip install -r requirements.txt
-     ```
-
-6. **Open VSCode**:
-   - Open VSCode and navigate to the project directory:
-     ```
-     code .
-     ```
-
+     
 ### The Next Steps are Recommended to Avoid Multiple Prompts for a Password
 
 7. **Generate SSH Keys (if not already done)**:
    - Run the following command to generate SSH keys:
-     ```
+     ```bash
      ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
      ```
    - Press Enter to accept the default file location and enter a passphrase if you want (or leave it empty for no passphrase).
 
 8. **Copy the Public Key to Your Older Mac**:
    - Run the following command to copy the public key to your older Mac:
-     ```
+     ```bash
      ssh-copy-id username@remote_ip
      ```
    - Replace `username` and `remote_ip` with your actual username and the IP address of the older Mac. This will prompt you for the password one last time.
@@ -71,9 +59,9 @@ This script was created because the Apple migration assistant does not let you m
 
 9. **Run the Script**:
    - Run the script with the following command:
-     ```
+     ```bash
      python3 arm2intel_legacy_transfer.py
-     ```
+     ```bash
 
 10. **Follow the Prompts**:
     - Enter the IP address and username of the older Mac when prompted.
