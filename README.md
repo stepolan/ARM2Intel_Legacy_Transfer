@@ -38,36 +38,35 @@ This script was created because the Apple migration assistant does not let you m
      ```bash
      conda activate arm2intel_legacy_transfer
      ```
-     
-### The Next Steps are Recommended to Avoid Multiple Prompts for a Password
 
-7. **Generate SSH Keys (if not already done)**:
-   - Run the following command to generate SSH keys:
-     ```bash
-     ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-     ```
-   - Press Enter to accept the default file location and enter a passphrase if you want (or leave it empty for no passphrase).
+### Mounting the New Mac as a Disk on the Old Mac
 
-8. **Copy the Public Key to Your Older Mac**:
-   - Run the following command to copy the public key to your older Mac:
-     ```bash
-     ssh-copy-id username@remote_ip
-     ```
-   - Replace `username` and `remote_ip` with your actual username and the IP address of the older Mac. This will prompt you for the password one last time.
+5. **Enable Target Disk Mode on the New Mac**:
+   - Restart the new Mac and hold down the `T` key while it restarts.
+   - Connect the new Mac to the old Mac using a USB-C or Thunderbolt cable.
+   - The new Mac will appear as an external disk on the old Mac.
+
+6. **Verify the Disk is Mounted**:
+   - Open `Finder` on the old Mac.
+   - You should see the new Mac's disk mounted as an external drive.
 
 ### Running the Script
 
-9. **Run the Script**:
+7. **Run the Script**:
+   - In the terminal on the old Mac, navigate to the project directory where the script is located:
+     ```bash
+     cd /path/to/arm2intel_legacy_transfer
+     ```
    - Run the script with the following command:
      ```bash
      python3 arm2intel_legacy_transfer.py
-     ```bash
+     ```
 
-10. **Follow the Prompts**:
-    - Enter the IP address and username of the older Mac when prompted.
+8. **Follow the Prompts**:
+    - The script will guide you through the process of selecting which files and directories to copy.
     - Respond to the prompts to decide whether to copy applications, Xcode (if present), the entire Library directory, preferences, documents, mail data, calendar data, and other non-hidden directories in the user home folder.
 
-11. **Check Logs**:
+9. **Check Logs**:
     - The script will log its operations to `copy_mac_apps.log`.
     - If there are any errors, they will be logged in `rsync_errors.log`. You can check this file to diagnose any issues.
 
@@ -78,4 +77,3 @@ This script is provided "as is", without warranty of any kind. Use at your own r
 ## License
 
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
-This detailed README provides more comprehensive instructions on cloning the repository, 
