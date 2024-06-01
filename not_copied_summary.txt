@@ -1,0 +1,5 @@
+
+Summary of Applications Not Copied:
+==================================================
+
+Please manually install these applications on your older Mac as needed.

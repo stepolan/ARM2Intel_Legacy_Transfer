@@ -85,8 +85,16 @@ def copy_all_except_non_intel_apps(remote_ip, username, copy_xcode):
             if app == "Xcode.app":
                 if copy_xcode:
                     destination = f"{username}@{remote_ip}:/Applications/"
-                    rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", app_path, destination, "2> rsync_errors.log"]
-                    result = subprocess.run(" ".join(rsync_command), shell=True)
+                    rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", app_path, destination]
+                    
+                    # Log the rsync command being run
+                    logging.info(f"Running command: {' '.join(rsync_command)} 2>> rsync_errors.log")
+                    
+                    result = subprocess.run(" ".join(rsync_command) + " 2>> rsync_errors.log", shell=True)
+                    
+                    # Log the return code and outcome
+                    logging.info(f"Command returned: {result.returncode}")
+                    
                     if result.returncode == 0:
                         logging.info(f"Copied Xcode to {destination} successfully")
                     else:
@@ -95,8 +103,16 @@ def copy_all_except_non_intel_apps(remote_ip, username, copy_xcode):
                     not_copied_apps.append(app)
             elif app not in non_intel_apps:
                 destination = f"{username}@{remote_ip}:/Applications/"
-                rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", app_path, destination, "2> rsync_errors.log"]
-                result = subprocess.run(" ".join(rsync_command), shell=True)
+                rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", app_path, destination]
+                
+                # Log the rsync command being run
+                logging.info(f"Running command: {' '.join(rsync_command)} 2>> rsync_errors.log")
+                
+                result = subprocess.run(" ".join(rsync_command) + " 2>> rsync_errors.log", shell=True)
+                
+                # Log the return code and outcome
+                logging.info(f"Command returned: {result.returncode}")
+                
                 if result.returncode == 0:
                     logging.info(f"Copied {app} to {destination} successfully")
                 else:
@@ -108,8 +124,15 @@ def copy_all_except_non_intel_apps(remote_ip, username, copy_xcode):
         for app in not_copied_apps:
             f.write(f"{app}\n")
     
-    rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", "apps_to_manually_install.txt", f"{username}@{remote_ip}:/Applications/", "2> rsync_errors.log"]
-    result = subprocess.run(" ".join(rsync_command), shell=True)
+    rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", "apps_to_manually_install.txt", f"{username}@{remote_ip}:/Applications/"]
+    
+    # Log the rsync command being run
+    logging.info(f"Running command: {' '.join(rsync_command)} 2>> rsync_errors.log")
+    
+    result = subprocess.run(" ".join(rsync_command) + " 2>> rsync_errors.log", shell=True)
+    
+    # Log the return code and outcome
+    logging.info(f"Command returned: {result.returncode}")
     
     if result.returncode == 0:
         logging.info(f"Copied apps_to_manually_install.txt to {username}@{remote_ip}:/Applications/ successfully")
@@ -122,18 +145,26 @@ def copy_additional_folder(remote_ip, username, folder):
     destination = f"{username}@{remote_ip}:~/{os.path.basename(folder)}"
     
     rsync_command = [
+        "sudo",
         "rsync",
         "-avvh",
         "--rsync-path='sudo rsync'",
         source,
         destination
     ]
-    result = subprocess.run(" ".join(rsync_command), shell=True)
+    
+    # Log the rsync command being run
+    logging.info(f"Running command: {' '.join(rsync_command)} 2>> rsync_errors.log")
+    
+    result = subprocess.run(" ".join(rsync_command) + " 2>> rsync_errors.log", shell=True)
+    
+    # Log the return code and outcome
+    logging.info(f"Command returned: {result.returncode}")
     
     if result.returncode == 0:
         logging.info(f"Copied {folder} to {destination} successfully")
     else:
-        logging.error(f"Failed to copy {folder} to {destination}")
+        logging.error(f"Failed to copy {folder} to {destination}. Check rsync_errors.log for details.")
 
 # Section: Ask User for Input with Highlighted Default Value
 def ask_user(prompt, highlight, default='y'):
@@ -186,6 +217,7 @@ def save_summary_to_file(summary):
 
 if __name__ == "__main__":
     # Section: Check Applications
+    logging.info("*** STARTING A NEW RUN OF THE SCRIPT ****")
     results = check_applications_folder()
     save_results_to_file(results)
     save_non_intel_apps_to_file(results)
@@ -193,7 +225,6 @@ if __name__ == "__main__":
     logging.info("Results saved to 'universal_binaries_report.txt', 'non_intel_apps.txt', and 'universal_apps.txt'")
 
     # Section: Get User Input for IP and Username
-    logging.info("**** STARTING A NEW RUN OF THE SCRIPT ****")
     os.system('cls' if os.name == 'nt' else 'clear')
     remote_ip = input(f"Please enter the {YELLOW}{BOLD}IP address{ENDC} of the older Mac: ")
     username = input(f"Please enter the {YELLOW}{BOLD}username{ENDC} of the older Mac: ")
@@ -249,6 +280,8 @@ if __name__ == "__main__":
 
     # Section: Copy Selected Items
     os.system('cls' if os.name == 'nt' else 'clear')
+    not_copied_apps = []  # Ensure not_copied_apps is defined
+
     if copy_apps:
         copy_all_except_non_intel_apps(remote_ip, username, copy_xcode)
         logging.info("All applications except non-intel applications have been copied")
@@ -256,10 +289,10 @@ if __name__ == "__main__":
     if copy_library:
         copy_additional_folder(remote_ip, username, "~/Library")
         logging.info("Library directory has been copied")
-    else:
-        if copy_preferences:
-            copy_additional_folder(remote_ip, username, "~/Library/Preferences")
-            logging.info("Preferences have been copied")
+
+    if copy_preferences:
+        copy_additional_folder(remote_ip, username, "~/Library/Preferences")
+        logging.info("Preferences have been copied")
 
     if copy_documents:
         copy_additional_folder(remote_ip, username, "~/Documents")
@@ -272,7 +305,7 @@ if __name__ == "__main__":
     if copy_calendars:
         copy_additional_folder(remote_ip, username, "~/Library/Calendars")
         logging.info("Calendar data has been copied")
-
+    
     if copy_desktop:
         copy_additional_folder(remote_ip, username, "~/Desktop")
         logging.info("Desktop directory has been copied")
@@ -315,7 +348,7 @@ if __name__ == "__main__":
 
     # Generate and display summary
     summary = generate_summary(not_copied_apps)
-    print("These Application were not copied since they do not have the binaries required for Intel.  You will likely want to install this apps the standard way.")
+    print("These applications were not copied since they do not have the binaries required for Intel. You will likely want to install these apps the standard way.")
     print(summary)
     save_summary_to_file(summary)
     logging.info("Summary of applications not copied has been saved to 'not_copied_summary.txt'")
