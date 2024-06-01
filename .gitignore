@@ -1,8 +1,25 @@
 # Ignore log files
 copy_mac_apps.log
+rsync_errors.log
 
 # Ignore reports and text files
 universal_binaries_report.txt
 non_intel_apps.txt
 universal_apps.txt
 apps_to_manually_install.txt
+
+# Python
+*.pyc
+__pycache__/
+
+# Environment files
+.env
+.venv
+
+# Conda environment
+*.conda
+*.env
+*.pkl
+
+# VSCode settings
+.vscode/
