@@ -193,7 +193,7 @@ if __name__ == "__main__":
     logging.info("Results saved to 'universal_binaries_report.txt', 'non_intel_apps.txt', and 'universal_apps.txt'")
 
     # Section: Get User Input for IP and Username
-    logging.info("*** STARTING A NEW RUN OF THE SCRIPT ****")
+    logging.info("**** STARTING A NEW RUN OF THE SCRIPT ****")
     os.system('cls' if os.name == 'nt' else 'clear')
     remote_ip = input(f"Please enter the {YELLOW}{BOLD}IP address{ENDC} of the older Mac: ")
     username = input(f"Please enter the {YELLOW}{BOLD}username{ENDC} of the older Mac: ")
