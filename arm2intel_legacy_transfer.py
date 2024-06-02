@@ -3,7 +3,11 @@ import subprocess
 import logging
 
 # Configure logging
-logging.basicConfig(filename='copy_mac_apps.log', level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    filename='copy_mac_apps.log',
+    level=logging.DEBUG,  # Set to DEBUG to enable verbose logging
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 # ANSI escape codes for color
 GREEN = '\033[92m'
@@ -16,6 +20,7 @@ ENDC = '\033[0m'
 
 # Section: Check if Application is Universal Binary
 def check_universal_binary(app_path):
+    logging.debug(f"Checking if {app_path} is a universal binary.")
     executable_path = os.path.join(app_path, "Contents", "MacOS")
     if not os.path.exists(executable_path):
         return False, "Executable not found"
@@ -27,6 +32,7 @@ def check_universal_binary(app_path):
     executable_file = os.path.join(executable_path, executables[0])
     result = subprocess.run(["file", executable_file], capture_output=True, text=True)
     output = result.stdout
+    logging.debug(f"file command output for {executable_file}: {output}")
 
     if "Mach-O universal binary with 2 architectures" in output:
         return True, output
@@ -34,8 +40,9 @@ def check_universal_binary(app_path):
         return False, output
 
 # Section: Check Applications Folder
-def check_applications_folder():
-    applications_folder = "/Volumes/Macintosh HD/Applications"
+def check_applications_folder(mount_point):
+    logging.debug(f"Checking applications in {mount_point}/Applications.")
+    applications_folder = os.path.join(mount_point, "Applications")
     app_files = os.listdir(applications_folder)
     
     results = {}
@@ -44,11 +51,13 @@ def check_applications_folder():
             app_path = os.path.join(applications_folder, app)
             is_universal, details = check_universal_binary(app_path)
             results[app] = (is_universal, details)
+            logging.debug(f"Checked {app}: Universal={is_universal}, Details={details}")
     
     return results
 
 # Section: Save Results to File
 def save_results_to_file(results):
+    logging.debug("Saving results to universal_binaries_report.txt.")
     with open("universal_binaries_report.txt", "w") as f:
         for app, (is_universal, details) in results.items():
             status = "Universal Binary" if is_universal else "Not Universal"
@@ -57,6 +66,7 @@ def save_results_to_file(results):
 
 # Section: Save Non-Intel Apps to File
 def save_non_intel_apps_to_file(results):
+    logging.debug("Saving non-intel apps to non_intel_apps.txt.")
     with open("non_intel_apps.txt", "w") as f:
         for app, (is_universal, details) in results.items():
             if not is_universal:
@@ -64,17 +74,19 @@ def save_non_intel_apps_to_file(results):
 
 # Section: Save Universal Apps to File
 def save_universal_apps_to_file(results):
+    logging.debug("Saving universal apps to universal_apps.txt.")
     with open("universal_apps.txt", "w") as f:
         for app, (is_universal, details) in results.items():
             if is_universal:
                 f.write(f"{app}\n")
 
 # Section: Copy All Applications Except Non-Intel Apps
-def copy_all_except_non_intel_apps(destination_path, copy_xcode):
+def copy_all_except_non_intel_apps(mount_point, username, copy_xcode):
+    logging.debug("Copying all applications except non-intel apps.")
     with open("non_intel_apps.txt", "r") as f:
         non_intel_apps = [line.strip() for line in f]
     
-    applications_folder = "/Volumes/Macintosh HD/Applications"
+    applications_folder = os.path.join(mount_point, "Applications")
     app_files = os.listdir(applications_folder)
     
     not_copied_apps = []
@@ -82,11 +94,12 @@ def copy_all_except_non_intel_apps(destination_path, copy_xcode):
     for app in app_files:
         if app.endswith(".app"):
             app_path = os.path.join(applications_folder, app)
+            logging.debug(f"Preparing to copy {app}.")
             if app == "Xcode.app":
                 if copy_xcode:
-                    destination = os.path.join(destination_path, "Applications")
-                    rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", app_path, destination, "2> rsync_errors.log"]
-                    result = subprocess.run(" ".join(rsync_command), shell=True)
+                    destination = os.path.expanduser("~/Applications/")
+                    rsync_command = f"sudo rsync -avvh --rsync-path='sudo rsync' '{app_path}/' '{destination}' 2> rsync_errors.log"
+                    result = subprocess.run(rsync_command, shell=True)
                     if result.returncode == 0:
                         logging.info(f"Copied Xcode to {destination} successfully")
                     else:
@@ -94,9 +107,9 @@ def copy_all_except_non_intel_apps(destination_path, copy_xcode):
                 else:
                     not_copied_apps.append(app)
             elif app not in non_intel_apps:
-                destination = os.path.join(destination_path, "Applications")
-                rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", app_path, destination, "2> rsync_errors.log"]
-                result = subprocess.run(" ".join(rsync_command), shell=True)
+                destination = os.path.expanduser("~/Applications/")
+                rsync_command = f"sudo rsync -avvh --rsync-path='sudo rsync' '{app_path}/' '{destination}' 2> rsync_errors.log"
+                result = subprocess.run(rsync_command, shell=True)
                 if result.returncode == 0:
                     logging.info(f"Copied {app} to {destination} successfully")
                 else:
@@ -108,29 +121,23 @@ def copy_all_except_non_intel_apps(destination_path, copy_xcode):
         for app in not_copied_apps:
             f.write(f"{app}\n")
     
-    rsync_command = ["sudo", "rsync", "-avvh", "--rsync-path='sudo rsync'", "apps_to_manually_install.txt", os.path.join(destination_path, "Applications"), "2> rsync_errors.log"]
-    result = subprocess.run(" ".join(rsync_command), shell=True)
+    destination = os.path.expanduser("~/Applications/")
+    rsync_command = f"sudo rsync -avvh --rsync-path='sudo rsync' 'apps_to_manually_install.txt' '{destination}' 2> rsync_errors.log"
+    result = subprocess.run(rsync_command, shell=True)
     
     if result.returncode == 0:
-        logging.info(f"Copied apps_to_manually_install.txt to {os.path.join(destination_path, 'Applications')} successfully")
+        logging.info(f"Copied apps_to_manually_install.txt to {destination} successfully")
     else:
-        logging.error(f"Failed to copy apps_to_manually_install.txt to {os.path.join(destination_path, 'Applications')}. Check rsync_errors.log for details.")
+        logging.error(f"Failed to copy apps_to_manually_install.txt to {destination}. Check rsync_errors.log for details.")
 
 # Section: Copy Additional Folder
-def copy_additional_folder(destination_path, folder):
-    source = os.path.expanduser(folder)
-    destination = os.path.join(destination_path, os.path.basename(folder))
+def copy_additional_folder(mount_point, username, folder):
+    logging.debug(f"Copying additional folder {folder}.")
+    source = os.path.join(mount_point, "Users", username, folder.lstrip("~/"))
+    destination = os.path.expanduser(f"~/{os.path.basename(folder)}")
     
-    rsync_command = [
-        "sudo",
-        "rsync",
-        "-avvh",
-        "--rsync-path='sudo rsync'",
-        source,
-        destination,
-        "2> rsync_errors.log"
-    ]
-    result = subprocess.run(" ".join(rsync_command), shell=True)
+    rsync_command = f"sudo rsync -avvh --rsync-path='sudo rsync' '{source}/' '{destination}' 2> rsync_errors.log"
+    result = subprocess.run(rsync_command, shell=True)
     
     if result.returncode == 0:
         logging.info(f"Copied {folder} to {destination} successfully")
@@ -144,27 +151,17 @@ def ask_user(prompt, highlight, default='y'):
         return default == 'y'
     return response == 'y'
 
-# Section: Ask User for Transfer Method
-def ask_transfer_method():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(f"{YELLOW}{BOLD}Select transfer method:{ENDC}")
-    print(f"{GREEN}1. rsync{ENDC} (Recommended for faster, incremental transfer, and resumes from interruptions)")
-    while True:
-        choice = input("Enter the number of your choice (default 1): ").strip()
-        if choice == '' or choice == '1':
-            return 'rsync'
-        else:
-            print(f"{RED}Invalid choice. Please enter 1.{ENDC}")
-
 # Section: Find Non-Hidden Directories in Home Folder
-def find_non_hidden_directories():
-    home_dir = "/Volumes/Macintosh HD/Users/yourusername"
+def find_non_hidden_directories(mount_point, username):
+    logging.debug(f"Finding non-hidden directories in {mount_point}/Users/{username}.")
+    home_dir = os.path.join(mount_point, "Users", username)
     directories = [d for d in os.listdir(home_dir) if os.path.isdir(os.path.join(home_dir, d)) and not d.startswith('.')]
     return directories
 
 # Section: Check if Xcode is Installed
-def check_for_xcode():
-    return os.path.exists("/Volumes/Macintosh HD/Applications/Xcode.app")
+def check_for_xcode(mount_point):
+    logging.debug(f"Checking if Xcode is installed in {mount_point}/Applications.")
+    return os.path.exists(os.path.join(mount_point, "Applications/Xcode.app"))
 
 # Section: Center Text Within a Fixed Width
 def center_within_width(text, width):
@@ -172,19 +169,52 @@ def center_within_width(text, width):
     padding = (width - text_width) // 2
     return ' ' * padding + text
 
+# Section: Generate Summary of Applications Not Copied
+def generate_summary(not_copied_apps):
+    logging.debug("Generating summary of applications not copied.")
+    summary = "\nSummary of Applications Not Copied:\n"
+    summary += "=" * 50 + "\n"
+    for app in not_copied_apps:
+        summary += f"{app}: Not copied because it is not a universal binary or user opted out.\n"
+    summary += "\nPlease manually install these applications on your older Mac as needed.\n"
+    return summary
+
+# Section: Save Summary to File
+def save_summary_to_file(summary):
+    logging.debug("Saving summary of applications not copied to not_copied_summary.txt.")
+    with open("not_copied_summary.txt", "w") as f:
+        f.write(summary)
+
 if __name__ == "__main__":
-    # Section: Check Applications
+    # Section: Get Mount Point and User Info
     logging.info("*** STARTING A NEW RUN OF THE SCRIPT ****")
-    results = check_applications_folder()
+    mount_point = input(f"Please enter the {YELLOW}{BOLD}mount point{ENDC} of the new Mac (e.g., /Volumes/Macintosh\\ HD): ")
+    if not mount_point:
+        mount_point = "/Volumes/Macintosh HD"
+    
+    while not os.path.ismount(mount_point.replace("\\", "")):
+        mount_point = input(f"{RED}Mount point is not accessible. Please enter a valid mount point: {ENDC}")
+
+    print(f"Contents of {mount_point}/Users:")
+    users = os.listdir(os.path.join(mount_point, "Users"))
+    for user in users:
+        print(user)
+
+    username = input(f"Please enter the {YELLOW}{BOLD}username{ENDC} of the new Mac: ")
+    while not os.path.exists(os.path.join(mount_point, "Users", username)):
+        username = input(f"{RED}User directory is not accessible. Please enter a valid username: {ENDC}")
+
+    print(f"Contents of {mount_point}/Users/{username}:")
+    user_dirs = os.listdir(os.path.join(mount_point, "Users", username))
+    for directory in user_dirs:
+        print(directory)
+
+    # Section: Check Applications
+    results = check_applications_folder(mount_point)
     save_results_to_file(results)
     save_non_intel_apps_to_file(results)
     save_universal_apps_to_file(results)
     logging.info("Results saved to 'universal_binaries_report.txt', 'non_intel_apps.txt', and 'universal_apps.txt'")
-
-    # Section: Get User Input for IP and Username
-    os.system('cls' if os.name == 'nt' else 'clear')
-    destination_path = input(f"Please enter the path where you want to copy the files on the older Mac: ")
-    print("")
 
     # Section: Recommended to Copy
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -192,7 +222,7 @@ if __name__ == "__main__":
     copy_apps = ask_user("Do you want to copy applications?", "applications")
     print("")
     copy_xcode = False
-    if check_for_xcode():
+    if check_for_xcode(mount_point):
         copy_xcode = ask_user("Xcode is a large application. Do you want to copy Xcode?", "Xcode")
         print("")
     copy_preferences = ask_user("Do you want to copy preferences?", "preferences")
@@ -226,7 +256,7 @@ if __name__ == "__main__":
     copy_downloads = ask_user("Do you want to copy the Downloads directory?", "Downloads", default='n')
     print("")
 
-    non_hidden_dirs = find_non_hidden_directories()
+    non_hidden_dirs = find_non_hidden_directories(mount_point, username)
     copy_dirs = {}
     for directory in non_hidden_dirs:
         if directory not in ["Library", "Desktop", "Pictures", "Music", "Movies", "Public", "Documents", "Downloads"]:
@@ -236,75 +266,75 @@ if __name__ == "__main__":
 
     # Section: Copy Selected Items
     os.system('cls' if os.name == 'nt' else 'clear')
+    not_copied_apps = []  # Initialize the list here to avoid undefined variable error
+
     if copy_apps:
-        copy_all_except_non_intel_apps(destination_path, copy_xcode)
+        copy_all_except_non_intel_apps(mount_point, username, copy_xcode)
         logging.info("All applications except non-intel applications have been copied")
 
     if copy_library:
-        copy_additional_folder(destination_path, "~/Library")
+        copy_additional_folder(mount_point, username, "~/Library")
         logging.info("Library directory has been copied")
 
     if copy_preferences:
-        copy_additional_folder(destination_path, "~/Library/Preferences")
+        copy_additional_folder(mount_point, username, "~/Library/Preferences")
         logging.info("Preferences have been copied")
 
     if copy_documents:
-        copy_additional_folder(destination_path, "~/Documents")
+        copy_additional_folder(mount_point, username, "~/Documents")
         logging.info("Documents have been copied")
 
     if copy_mail:
-        copy_additional_folder(destination_path, "~/Library/Mail")
+        copy_additional_folder(mount_point, username, "~/Library/Mail")
         logging.info("Mail data has been copied")
 
     if copy_calendars:
-        copy_additional_folder(destination_path, "~/Library/Calendars")
+        copy_additional_folder(mount_point, username, "~/Library/Calendars")
         logging.info("Calendar data has been copied")
     
     if copy_desktop:
-        copy_additional_folder(destination_path, "~/Desktop")
+        copy_additional_folder(mount_point, username, "~/Desktop")
         logging.info("Desktop directory has been copied")
 
     if copy_downloads:
-        copy_additional_folder(destination_path, "~/Downloads")
+        copy_additional_folder(mount_point, username, "~/Downloads")
         logging.info("Downloads directory has been copied")
 
     if copy_pictures:
-        copy_additional_folder(destination_path, "~/Pictures")
+        copy_additional_folder(mount_point, username, "~/Pictures")
         logging.info("Pictures directory has been copied")
 
     if copy_music:
-        copy_additional_folder(destination_path, "~/Music")
+        copy_additional_folder(mount_point, username, "~/Music")
         logging.info("Music directory has been copied")
 
     if copy_movies:
-        copy_additional_folder(destination_path, "~/Movies")
+        copy_additional_folder(mount_point, username, "~/Movies")
         logging.info("Movies directory has been copied")
 
     if copy_public:
-        copy_additional_folder(destination_path, "~/Public")
+        copy_additional_folder(mount_point, username, "~/Public")
         logging.info("Public directory has been copied")
 
     if copy_fonts:
-        copy_additional_folder(destination_path, "~/Library/Fonts")
+        copy_additional_folder(mount_point, username, "~/Library/Fonts")
         logging.info("Fonts directory has been copied")
 
     if copy_dotfiles:
         dotfiles = ['.bash_profile', '.zshrc', '.gitconfig']
         for dotfile in dotfiles:
             if os.path.exists(os.path.expanduser(f"~/{dotfile}")):
-                copy_additional_folder(destination_path, f"~/{dotfile}")
+                copy_additional_folder(mount_point, username, f"~/{dotfile}")
                 logging.info(f"{dotfile} has been copied")
 
     for directory, should_copy in copy_dirs.items():
         if should_copy:
-            copy_additional_folder(destination_path, f"~/{directory}")
+            copy_additional_folder(mount_point, username, f"~/{directory}")
             logging.info(f"{directory} directory has been copied")
-
-    logging.info("The list of apps that were not copied has been saved to 'apps_to_manually_install.txt' and copied to the remote Applications folder")
 
     # Generate and display summary
     summary = generate_summary(not_copied_apps)
-    print("These Application were not copied since they do not have the binaries required for Intel.  You will likely want to install this apps the standard way.")
+    print("These Application were not copied since they do not have the binaries required for Intel. You will likely want to install this apps the standard way.")
     print(summary)
     save_summary_to_file(summary)
     logging.info("Summary of applications not copied has been saved to 'not_copied_summary.txt'")
