@@ -28,7 +28,7 @@ BLUE = "\033[0;34m"
 PURPLE = "\033[0;35m"
 CYAN = "\033[0;36m"
 LIGHT_GRAY = "\033[0;37m"
-DARK_GRAY = "\033[1;30m"
+BLUE = "\033[1;30m"
 LIGHT_RED = "\033[1;31m"
 LIGHT_GREEN = "\033[1;32m"
 YELLOW = "\033[1;33m"
@@ -236,28 +236,28 @@ if __name__ == "__main__":
     print("")
     print(f"{LIGHT_WHITE}{BOLD} _______ ______   __   __   _______   ___ __    _ _______ _______ ___     {RESET}")
     print(f"{LIGHT_WHITE}{BOLD}|   _   |    _ | |  |_|  | |       | |   |  |  | |       |       |   |    {RESET}")
-    print(f"{CYAN}{BOLD}|  |_|  |   | || |       | |____   | |   |   |_| |_     _|    ___|   |    {RESET}")
-    print(f"{CYAN}{BOLD}|       |   |_||_|       |  ____|  | |   |       | |   | |   |___|   |    {RESET}")
+    print(f"{LIGHT_CYAN}{BOLD}|  |_|  |   | || |       | |____   | |   |   |_| |_     _|    ___|   |    {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}|       |   |_||_|       |  ____|  | |   |       | |   | |   |___|   |    {RESET}")
     print(f"{LIGHT_BLUE}{BOLD}|       |    __  |       | | ______| |   |  _    | |   | |    ___|   |___ {RESET}")
-    print(f"{LIGHT_BLUE}{BOLD}|   _   |   |  | | ||_|| | | |_____  |   | | |   | |   | |   |___|       |{RESET}")
-    print(f"{DARK_GRAY}{BOLD}|__| |__|___|  |_|_|   |_| |_______| |___|_|  |__| |___| |_______|_______|{RESET}")
+    print(f"{LIGHT_CYAN}{BOLD}|   _   |   |  | | ||_|| | | |_____  |   | | |   | |   | |   |___|       |{RESET}")
+    print(f"{LIGHT_WHITE}{BOLD}|__| |__|___|  |_|_|   |_| |_______| |___|_|  |__| |___| |_______|_______|{RESET}")
     print(f"{LIGHT_WHITE}{BOLD}            ___     _______ _______ _______ _______ __   __               {RESET}")
     print(f"{LIGHT_WHITE}{BOLD}           |   |   |       |       |   _   |       |  | |  |              {RESET}")
     print(f"{LIGHT_CYAN}{BOLD}           |   |   |    ___|    ___|  |_|  |       |  |_|  |              {RESET}")
-    print(f"{LIGHT_CYAN}{BOLD}           |   |   |   |___|   | __|       |       |       |              {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}           |   |   |   |___|   | __|       |       |       |              {RESET}")
     print(f"{LIGHT_BLUE}{BOLD}           |   |___|    ___|   ||  |       |      _|_     _|              {RESET}")
-    print(f"{LIGHT_BLUE}{BOLD}           |       |   |___|   |_| |   _   |     |_  |   |                {RESET}")
-    print(f"{DARK_GRAY}{BOLD}           |_______|_______|_______|__| |__|_______| |___|                {RESET}")
+    print(f"{LIGHT_CYAN}{BOLD}           |       |   |___|   |_| |   _   |     |_  |   |                {RESET}")
+    print(f"{LIGHT_WHITE}{BOLD}           |_______|_______|_______|__| |__|_______| |___|                {RESET}")
     print(f"{LIGHT_WHITE}{BOLD}   _______ ______   _______ __    _ _______ _______ _______ ______        {RESET}")
     print(f"{LIGHT_WHITE}{BOLD}  |       |    _ | |   _   |  |  | |       |       |       |    _ |       {RESET}")
     print(f"{LIGHT_CYAN}{BOLD}  |_     _|   | || |  |_|  |   |_| |  _____|    ___|    ___|   | ||       {RESET}")
-    print(f"{LIGHT_CYAN}{BOLD}    |   | |   |_||_|       |       | |_____|   |___|   |___|   |_||_      {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}    |   | |   |_||_|       |       | |_____|   |___|   |___|   |_||_      {RESET}")
     print(f"{LIGHT_BLUE}{BOLD}    |   | |    __  |       |  _    |_____  |    ___|    ___|    __  |     {RESET}")
-    print(f"{LIGHT_BLUE}{BOLD}    |   | |   |  | |   _   | | |   |_____| |   |   |   |___|   |  | |     {RESET}")
-    print(f"{DARK_GRAY}{BOLD}    |___| |___|  |_|__| |__|_|  |__|_______|___|   |_______|___|  |_|     {RESET}")
+    print(f"{LIGHT_CYAN}{BOLD}    |   | |   |  | |   _   | | |   |_____| |   |   |   |___|   |  | |     {RESET}")
+    print(f"{LIGHT_WHITE}{BOLD}    |___| |___|  |_|__| |__|_|  |__|_______|___|   |_______|___|  |_|     {RESET}")
     print("")
     ## Letters generated from https://patorjk.com/software/taag/
-    mount_point = input(f"Please enter the {LIGHT_CYAN}{BOLD}mount point{RESET} of the new Mac {DARK_GRAY}(e.g., /Volumes/Macintosh\\ HD){RESET}: ")
+    mount_point = input(f"Please enter the {LIGHT_CYAN}{BOLD}mount point{RESET} of the new Mac {ITALIC}{LIGHT_BLUE}(default: /Volumes/Macintosh\\ HD){RESET}: ")
     if not mount_point:
         mount_point = "/Volumes/Macintosh HD"
     
