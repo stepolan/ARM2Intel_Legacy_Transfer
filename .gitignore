@@ -7,6 +7,7 @@ universal_binaries_report.txt
 non_intel_apps.txt
 universal_apps.txt
 apps_to_manually_install.txt
+not_copied_summary.txt
 
 # Python
 *.pyc
@@ -23,3 +24,4 @@ __pycache__/
 
 # VSCode settings
 .vscode/
+not_copied_summary.txt

@@ -9,14 +9,58 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
-# ANSI escape codes for color
-GREEN = '\033[92m'
-RED = '\033[91m'
-YELLOW = '\033[93m'
-MAGENTA = '\033[95m'
-DARK_MAGENTA = '\033[35m'
+# ANSI escape codes for color and text formatting
+RESET = '\033[0m'
 BOLD = '\033[1m'
-ENDC = '\033[0m'
+ITALIC = '\033[3m'
+UNDERLINE = '\033[4m'
+BLINK = '\033[5m'
+REVERSE = '\033[7m'
+HIDE = '\033[8m'
+STRIKETHROUGH = '\033[9m'
+
+# Foreground colors
+BLACK = "\033[0;30m"
+RED = "\033[0;31m"
+GREEN = "\033[0;32m"
+BROWN = "\033[0;33m"
+BLUE = "\033[0;34m"
+PURPLE = "\033[0;35m"
+CYAN = "\033[0;36m"
+LIGHT_GRAY = "\033[0;37m"
+DARK_GRAY = "\033[1;30m"
+LIGHT_RED = "\033[1;31m"
+LIGHT_GREEN = "\033[1;32m"
+YELLOW = "\033[1;33m"
+LIGHT_BLUE = "\033[1;34m"
+LIGHT_PURPLE = "\033[1;35m"
+LIGHT_CYAN = "\033[1;36m"
+LIGHT_WHITE = "\033[1;37m"
+BOLD = "\033[1m"
+FAINT = "\033[2m"
+ITALIC = "\033[3m"
+UNDERLINE = "\033[4m"
+BLINK = "\033[5m"
+NEGATIVE = "\033[7m"
+CROSSED = "\033[9m"
+
+# Background colors
+BG_BLACK = '\033[40m'
+BG_RED = '\033[41m'
+BG_GREEN = '\033[42m'
+BG_YELLOW = '\033[43m'
+BG_BLUE = '\033[44m'
+BG_PURPLE = '\033[45m'
+BG_CYAN = '\033[46m'
+BG_WHITE = '\033[47m'
+BG_BRIGHT_BLACK = '\033[100m'
+BG_BRIGHT_RED = '\033[101m'
+BG_BRIGHT_GREEN = '\033[102m'
+BG_BRIGHT_YELLOW = '\033[103m'
+BG_BRIGHT_BLUE = '\033[104m'
+BG_BRIGHT_PURPLE = '\033[105m'
+BG_BRIGHT_CYAN = '\033[106m'
+BG_BRIGHT_WHITE = '\033[107m'
 
 # Section: Check if Application is Universal Binary
 def check_universal_binary(app_path):
@@ -146,7 +190,7 @@ def copy_additional_folder(mount_point, username, folder):
 
 # Section: Ask User for Input with Highlighted Default Value
 def ask_user(prompt, highlight, default='y'):
-    response = input(f"{prompt.replace(highlight, YELLOW + BOLD + highlight + ENDC)} ({GREEN}y{ENDC}/{RED}n{ENDC}, default {GREEN}{default}{ENDC}): ").strip().lower()
+    response = input(f"{prompt.replace(highlight, YELLOW + BOLD + highlight + RESET)} ({GREEN}y{RESET}/{RED}n{RESET}, default {GREEN}{default}{RESET}): ").strip().lower()
     if response == '':
         return default == 'y'
     return response == 'y'
@@ -188,21 +232,45 @@ def save_summary_to_file(summary):
 if __name__ == "__main__":
     # Section: Get Mount Point and User Info
     logging.info("*** STARTING A NEW RUN OF THE SCRIPT ****")
-    mount_point = input(f"Please enter the {YELLOW}{BOLD}mount point{ENDC} of the new Mac (e.g., /Volumes/Macintosh\\ HD): ")
+    os.system('cls' if os.name == 'nt' else 'clear')
+    print("")
+    print(f"{LIGHT_WHITE}{BOLD} _______ ______   __   __   _______   ___ __    _ _______ _______ ___     {RESET}")
+    print(f"{LIGHT_WHITE}{BOLD}|   _   |    _ | |  |_|  | |       | |   |  |  | |       |       |   |    {RESET}")
+    print(f"{CYAN}{BOLD}|  |_|  |   | || |       | |____   | |   |   |_| |_     _|    ___|   |    {RESET}")
+    print(f"{CYAN}{BOLD}|       |   |_||_|       |  ____|  | |   |       | |   | |   |___|   |    {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}|       |    __  |       | | ______| |   |  _    | |   | |    ___|   |___ {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}|   _   |   |  | | ||_|| | | |_____  |   | | |   | |   | |   |___|       |{RESET}")
+    print(f"{DARK_GRAY}{BOLD}|__| |__|___|  |_|_|   |_| |_______| |___|_|  |__| |___| |_______|_______|{RESET}")
+    print(f"{LIGHT_WHITE}{BOLD}            ___     _______ _______ _______ _______ __   __               {RESET}")
+    print(f"{LIGHT_WHITE}{BOLD}           |   |   |       |       |   _   |       |  | |  |              {RESET}")
+    print(f"{LIGHT_CYAN}{BOLD}           |   |   |    ___|    ___|  |_|  |       |  |_|  |              {RESET}")
+    print(f"{LIGHT_CYAN}{BOLD}           |   |   |   |___|   | __|       |       |       |              {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}           |   |___|    ___|   ||  |       |      _|_     _|              {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}           |       |   |___|   |_| |   _   |     |_  |   |                {RESET}")
+    print(f"{DARK_GRAY}{BOLD}           |_______|_______|_______|__| |__|_______| |___|                {RESET}")
+    print(f"{LIGHT_WHITE}{BOLD}   _______ ______   _______ __    _ _______ _______ _______ ______        {RESET}")
+    print(f"{LIGHT_WHITE}{BOLD}  |       |    _ | |   _   |  |  | |       |       |       |    _ |       {RESET}")
+    print(f"{LIGHT_CYAN}{BOLD}  |_     _|   | || |  |_|  |   |_| |  _____|    ___|    ___|   | ||       {RESET}")
+    print(f"{LIGHT_CYAN}{BOLD}    |   | |   |_||_|       |       | |_____|   |___|   |___|   |_||_      {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}    |   | |    __  |       |  _    |_____  |    ___|    ___|    __  |     {RESET}")
+    print(f"{LIGHT_BLUE}{BOLD}    |   | |   |  | |   _   | | |   |_____| |   |   |   |___|   |  | |     {RESET}")
+    print(f"{DARK_GRAY}{BOLD}    |___| |___|  |_|__| |__|_|  |__|_______|___|   |_______|___|  |_|     {RESET}")
+    print("")
+    mount_point = input(f"Please enter the {LIGHT_CYAN}{BOLD}mount point{RESET} of the new Mac {DARK_GRAY}(e.g., /Volumes/Macintosh\\ HD){RESET}: ")
     if not mount_point:
         mount_point = "/Volumes/Macintosh HD"
     
     while not os.path.ismount(mount_point.replace("\\", "")):
-        mount_point = input(f"{RED}Mount point is not accessible. Please enter a valid mount point: {ENDC}")
+        mount_point = input(f"{RED}Mount point is not accessible. Please enter a valid mount point: {RESET}")
 
     print(f"Contents of {mount_point}/Users:")
     users = os.listdir(os.path.join(mount_point, "Users"))
     for user in users:
         print(user)
 
-    username = input(f"Please enter the {YELLOW}{BOLD}username{ENDC} of the new Mac: ")
+    username = input(f"Please enter the {LIGHT_CYAN}{BOLD}username{RESET} of the new Mac: ")
     while not os.path.exists(os.path.join(mount_point, "Users", username)):
-        username = input(f"{RED}User directory is not accessible. Please enter a valid username: {ENDC}")
+        username = input(f"{RED}User directory is not accessible. Please enter a valid username: {RESET}")
 
     print(f"Contents of {mount_point}/Users/{username}:")
     user_dirs = os.listdir(os.path.join(mount_point, "Users", username))
@@ -218,7 +286,7 @@ if __name__ == "__main__":
 
     # Section: Recommended to Copy
     os.system('cls' if os.name == 'nt' else 'clear')
-    print(f"\n{DARK_MAGENTA}{'='*50}{ENDC}\n\n{BOLD}{MAGENTA}{center_within_width('Recommended to Copy (default is Yes)', 50)}{ENDC}\n\n{DARK_MAGENTA}{'='*50}{ENDC}\n")
+    print(f"\n{PURPLE}{'='*50}{RESET}\n\n{BOLD}{PURPLE}{center_within_width('Recommended to Copy (default is Yes)', 50)}{RESET}\n\n{PURPLE}{'='*50}{RESET}\n")
     copy_apps = ask_user("Do you want to copy applications?", "applications")
     print("")
     copy_xcode = False
@@ -246,11 +314,11 @@ if __name__ == "__main__":
     copy_fonts = ask_user("Do you want to copy the Fonts directory?", "Fonts")
     print("")
     copy_dotfiles = ask_user("Do you want to copy dotfiles (like .bash_profile, .zshrc, .gitconfig)?", "dotfiles")
-    print(f"{DARK_MAGENTA}{'='*50}{ENDC}\n")
+    print(f"{PURPLE}{'='*50}{RESET}\n")
 
     # Section: Optional to Copy
     os.system('cls' if os.name == 'nt' else 'clear')
-    print(f"\n{DARK_MAGENTA}{'='*50}{ENDC}\n\n{BOLD}{MAGENTA}{center_within_width('Optional to Copy (default is No)', 50)}{ENDC}\n\n{DARK_MAGENTA}{'='*50}{ENDC}\n")
+    print(f"\n{PURPLE}{'='*50}{RESET}\n\n{BOLD}{PURPLE}{center_within_width('Optional to Copy (default is No)', 50)}{RESET}\n\n{PURPLE}{'='*50}{RESET}\n")
     copy_library = ask_user("Do you want to copy the entire Library directory?", "Library", default='n')
     print("")
     copy_downloads = ask_user("Do you want to copy the Downloads directory?", "Downloads", default='n')
@@ -262,7 +330,7 @@ if __name__ == "__main__":
         if directory not in ["Library", "Desktop", "Pictures", "Music", "Movies", "Public", "Documents", "Downloads"]:
             copy_dirs[directory] = ask_user(f"Do you want to copy the {directory} directory?", directory, default='n')
             print("")
-    print(f"{DARK_MAGENTA}{'='*50}{ENDC}\n")
+    print(f"{PURPLE}{'='*50}{RESET}\n")
 
     # Section: Copy Selected Items
     os.system('cls' if os.name == 'nt' else 'clear')
