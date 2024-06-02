@@ -256,6 +256,7 @@ if __name__ == "__main__":
     print(f"{LIGHT_BLUE}{BOLD}    |   | |   |  | |   _   | | |   |_____| |   |   |   |___|   |  | |     {RESET}")
     print(f"{DARK_GRAY}{BOLD}    |___| |___|  |_|__| |__|_|  |__|_______|___|   |_______|___|  |_|     {RESET}")
     print("")
+    ## Letters generated from https://patorjk.com/software/taag/
     mount_point = input(f"Please enter the {LIGHT_CYAN}{BOLD}mount point{RESET} of the new Mac {DARK_GRAY}(e.g., /Volumes/Macintosh\\ HD){RESET}: ")
     if not mount_point:
         mount_point = "/Volumes/Macintosh HD"
