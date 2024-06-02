@@ -14,13 +14,13 @@ This script was created because the Apple migration assistant does not let you m
    - Open your terminal.
    - Navigate to the directory where you want to clone the repository.
    - Run the following command to clone the repository:
-     ```bash
+     ``` bash
      git clone https://github.com/yourusername/arm2intel_legacy_transfer.git
      ```
 
 2. **Navigate to the Project Directory**:
    - Change to the project directory:
-     ```bash
+     ``` bash
      cd arm2intel_legacy_transfer
      ```
 
@@ -31,43 +31,43 @@ This script was created because the Apple migration assistant does not let you m
 
 4. **Create and Activate a Conda Environment**:
    - Create a new conda environment with Python 3.9:
-     ```bash
+     ``` bash
      conda create --name arm2intel_legacy_transfer python=3.9
      ```
    - Activate the environment:
-     ```bash
+     ``` bash
      conda activate arm2intel_legacy_transfer
      ```
      
-### The Next Steps are Recommended to Avoid Multiple Prompts for a Password
+### Mounting the ARM Mac as a Disk on the Intel Mac
 
-7. **Generate SSH Keys (if not already done)**:
-   - Run the following command to generate SSH keys:
-     ```bash
-     ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-     ```
-   - Press Enter to accept the default file location and enter a passphrase if you want (or leave it empty for no passphrase).
-
-8. **Copy the Public Key to Your Older Mac**:
-   - Run the following command to copy the public key to your older Mac:
-     ```bash
-     ssh-copy-id username@remote_ip
-     ```
-   - Replace `username` and `remote_ip` with your actual username and the IP address of the older Mac. This will prompt you for the password one last time.
+6. **Mount the ARM Mac on the Intel Mac**:
+   - Connect the two computers using a USB, USB-C, or Thunderbolt cable.
+   - On the Mac with Apple silicon, choose Apple menu  > Shut Down.
+   - Press and hold the power button until “Loading startup options” appears.
+   - Click Options, then click Continue.
+   - Select a startup disk, then click Next.
+   - If requested, enter the password for an administrator account.
+   - Your Mac opens in Recovery mode.
+   - Choose Utilities > Share Disk.
+   - Select the disk or volume that you want to share, then click Start Sharing.
+   - On the other Mac, open a Finder window, then click Network (below Locations) in the sidebar.
+   - In the Network window, double-click the Mac that has the shared disk or volume, click Connect As, select Guest in the Connect As window, then click Connect.
+   - On the Intel Mac, the ARM Mac should appear as an external disk. Note the mount point (e.g., `/Volumes/Macintosh HD`).
 
 ### Running the Script
 
-9. **Run the Script**:
+7. **Run the Script**:
    - Run the script with the following command:
-     ```bash
+     ``` bash
      python3 arm2intel_legacy_transfer.py
-     ```bash
+     ```
 
-10. **Follow the Prompts**:
-    - Enter the IP address and username of the older Mac when prompted.
+8. **Follow the Prompts**:
+    - Enter the mount point and username of the ARM Mac when prompted. The default mount point is `/Volumes/Macintosh HD`.
     - Respond to the prompts to decide whether to copy applications, Xcode (if present), the entire Library directory, preferences, documents, mail data, calendar data, and other non-hidden directories in the user home folder.
 
-11. **Check Logs**:
+9. **Check Logs**:
     - The script will log its operations to `copy_mac_apps.log`.
     - If there are any errors, they will be logged in `rsync_errors.log`. You can check this file to diagnose any issues.
 
@@ -78,4 +78,3 @@ This script is provided "as is", without warranty of any kind. Use at your own r
 ## License
 
 This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
-This detailed README provides more comprehensive instructions on cloning the repository, 
